@@ -30,18 +30,20 @@ def bbox_iou(box1, box2, x1y1x2y2=True):
         w2 = box2[2] - box2[0]
         h2 = box2[3] - box2[1]
     else:
-        mx = min(box1[0]-box1[2]/2.0, box2[0]-box2[2]/2.0)
-        Mx = max(box1[0]+box1[2]/2.0, box2[0]+box2[2]/2.0)
-        my = min(box1[1]-box1[3]/2.0, box2[1]-box2[3]/2.0)
-        My = max(box1[1]+box1[3]/2.0, box2[1]+box2[3]/2.0)
+        mx = min(torch.tensor(box1[0],dtype=torch.float64)-torch.tensor(box1[2],dtype=torch.float64)/2.0, torch.tensor(box2[0],dtype=torch.float64)-torch.tensor(box2[2],dtype=torch.float64)/2.0)
+        Mx = max(torch.tensor(box1[0],dtype=torch.float64)+torch.tensor(box1[2],dtype=torch.float64)/2.0, torch.tensor(box2[0],dtype=torch.float64)+torch.tensor(box2[2],dtype=torch.float64)/2.0)
+        my = min(torch.tensor(box1[1],dtype=torch.float64)-torch.tensor(box1[3],dtype=torch.float64)/2.0, torch.tensor(box2[1],dtype=torch.float64)-torch.tensor(box2[3],dtype=torch.float64)/2.0)
+        My = max(torch.tensor(box1[1],dtype=torch.float64)+torch.tensor(box1[3],dtype=torch.float64)/2.0, torch.tensor(box2[1],dtype=torch.float64)+torch.tensor(box2[3],dtype=torch.float64)/2.0)
         w1 = box1[2]
         h1 = box1[3]
         w2 = box2[2]
         h2 = box2[3]
     uw = Mx - mx
     uh = My - my
-    cw = w1 + w2 - uw
-    ch = h1 + h2 - uh
+    # cw = w1 + w2 - torch.tensor(uw,dtype=torch.float64)
+    cw = torch.tensor(w1,dtype=torch.float64) + torch.tensor(w2,dtype=torch.float64) - torch.tensor(uw,dtype=torch.float64)
+    
+    ch = torch.tensor(h1,dtype=torch.float64) + torch.tensor(h2,dtype=torch.float64) -torch.tensor(uh,dtype=torch.float64)
     carea = 0
     if cw <= 0 or ch <= 0:
         return 0.0
@@ -49,7 +51,7 @@ def bbox_iou(box1, box2, x1y1x2y2=True):
     area1 = w1 * h1
     area2 = w2 * h2
     carea = cw * ch
-    uarea = area1 + area2 - carea
+    uarea = torch.tensor(area1,dtype=torch.float64) + torch.tensor(area2,dtype=torch.float64) - carea
     return carea/uarea
 
 def bbox_ious(boxes1, boxes2, x1y1x2y2=True):
@@ -277,7 +279,7 @@ def read_truths(lab_path):
         return np.array([])
     if os.path.getsize(lab_path):
         truths = np.loadtxt(lab_path)
-        truths = truths.reshape(truths.size/5, 5) # to avoid single truth problem
+        truths = truths.reshape(int(truths.size/5), 5)
         return truths
     else:
         return np.array([])
@@ -388,7 +390,7 @@ def scale_bboxes(bboxes, width, height):
       
 def file_lines(thefilepath):
     count = 0
-    thefile = open(thefilepath, 'rb')
+    thefile = open(thefilepath, 'r')
     while True:
         buffer = thefile.read(8192*1024)
         if not buffer:

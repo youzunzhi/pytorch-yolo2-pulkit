@@ -50,11 +50,11 @@ steps         = [float(step) for step in net_options['steps'].split(',')]
 scales        = [float(scale) for scale in net_options['scales'].split(',')]
 
 #Train parameters
-max_epochs    = max_batches*batch_size/nsamples+1
+max_epochs    = max_batches*batch_size//nsamples+1
 use_cuda      = True
 seed          = int(time.time())
 eps           = 1e-5
-save_interval = 10  # epoches
+save_interval = 1 # epoches
 dot_interval  = 70  # batches
 
 # Test parameters
@@ -245,14 +245,13 @@ def test(epoch):
                     if iou > best_iou:
                         best_j = j
                         best_iou = iou
-                if best_iou > iou_thresh and boxes[best_j][6] == box_gt[6]:
+                if best_iou > iou_thresh and boxes[best_j][6] == torch.tensor(box_gt[6],dtype = torch.long):
                     correct = correct+1
 
     precision = 1.0*correct/(proposals+eps)
     recall = 1.0*correct/(total+eps)
     fscore = 2.0*precision*recall/(precision+recall+eps)
     logging("precision: %f, recall: %f, fscore: %f" % (precision, recall, fscore))
-
 evaluate = False
 if evaluate:
     logging('evaluating ...')

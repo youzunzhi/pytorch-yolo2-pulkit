@@ -6,7 +6,7 @@
 
 import xml.etree.ElementTree as ET
 import os,sys
-import cPickle
+import _pickle as cPickle
 import numpy as np
 
 def parse_rec(filename):
@@ -108,15 +108,15 @@ def voc_eval(detpath,
         for i, imagename in enumerate(imagenames):
             recs[imagename] = parse_rec(annopath.format(imagename))
             if i % 100 == 0:
-                print 'Reading annotation for {:d}/{:d}'.format(
-                    i + 1, len(imagenames))
+                print ('Reading annotation for {:d}/{:d}'.format(
+                    i + 1, len(imagenames)))
         # save
-        print 'Saving cached annotations to {:s}'.format(cachefile)
-        with open(cachefile, 'w') as f:
+        print ('Saving cached annotations to {:s}'.format(cachefile))
+        with open(cachefile, 'wb') as f:
             cPickle.dump(recs, f)
     else:
         # load
-        with open(cachefile, 'r') as f:
+        with open(cachefile, 'rb') as f:
             recs = cPickle.load(f)
 
     # extract gt objects for this class
@@ -202,7 +202,7 @@ def voc_eval(detpath,
 
 
 def _do_python_eval(res_prefix, output_dir = 'output'):
-    _devkit_path = '/data/xiaohang/pytorch-yolo2/VOCdevkit'
+    _devkit_path = '../pytorch-yolo2/VOCdevkit'
     _year = '2007'
     _classes = ('__background__', # always index 0
         'aeroplane', 'bicycle', 'bird', 'boat',
@@ -228,7 +228,7 @@ def _do_python_eval(res_prefix, output_dir = 'output'):
     aps = []
     # The PASCAL VOC metric changed in 2010
     use_07_metric = True if int(_year) < 2010 else False
-    print 'VOC07 metric? ' + ('Yes' if use_07_metric else 'No')
+    print ('VOC07 metric? ' + ('Yes' if use_07_metric else 'No'))
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
     for i, cls in enumerate(_classes):
@@ -240,14 +240,14 @@ def _do_python_eval(res_prefix, output_dir = 'output'):
             use_07_metric=use_07_metric)
         aps += [ap]
         print('AP for {} = {:.4f}'.format(cls, ap))
-        with open(os.path.join(output_dir, cls + '_pr.pkl'), 'w') as f:
+        with open(os.path.join(output_dir, cls + '_pr.pkl'), 'wb') as f:
             cPickle.dump({'rec': rec, 'prec': prec, 'ap': ap}, f)
     print('Mean AP = {:.4f}'.format(np.mean(aps)))
     print('~~~~~~~~')
     print('Results:')
     for ap in aps:
-        print('{:.3f}'.format(ap))
-    print('{:.3f}'.format(np.mean(aps)))
+        print('{:.2f}'.format(ap*100))
+    print('{:.2f}'.format(np.mean(aps)*100))
     print('~~~~~~~~')
     print('')
     print('--------------------------------------------------------------')
