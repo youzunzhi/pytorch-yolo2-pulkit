@@ -1,9 +1,9 @@
 from __future__ import print_function
 import sys
-if len(sys.argv) != 4:
-    print('Usage:')
-    print('python train.py datacfg cfgfile weightfile')
-    exit()
+# if len(sys.argv) != 4:
+#     print('Usage:')
+#     print('python train.py datacfg cfgfile weightfile')
+#     exit()
 
 import time
 import torch
