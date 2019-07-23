@@ -23,12 +23,16 @@ from cfg import parse_cfg
 from region_loss import RegionLoss
 from darknet import Darknet
 from models.tiny_yolo import TinyYoloNet
-
+import pydevd_pycharm
+pydevd_pycharm.settrace('172.26.3.54', port=12343, stdoutToServer=True, stderrToServer=True)
 
 # Training settings
-datacfg       = sys.argv[1]
-cfgfile       = sys.argv[2]
-weightfile    = sys.argv[3]
+# datacfg       = sys.argv[1]
+# cfgfile       = sys.argv[2]
+# weightfile    = sys.argv[3]
+datacfg = 'cfg/voc.data'
+cfgfile       = 'cfg/yolov2-tiny-voc.cfg'
+weightfile    = 'weights/darknet.weights'
 
 data_options  = read_data_cfg(datacfg)
 net_options   = parse_cfg(cfgfile)[0]
