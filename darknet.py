@@ -146,7 +146,7 @@ class Darknet(nn.Module):
                 kernel_size = int(block['size'])
                 stride = int(block['stride'])
                 is_pad = int(block['pad'])
-                pad = (kernel_size-1)/2 if is_pad else 0
+                pad = (kernel_size-1)//2 if is_pad else 0
                 activation = block['activation']
                 model = nn.Sequential()
                 if batch_normalize:
@@ -230,7 +230,7 @@ class Darknet(nn.Module):
                 loss.anchors = [float(i) for i in anchors]
                 loss.num_classes = int(block['classes'])
                 loss.num_anchors = int(block['num'])
-                loss.anchor_step = len(loss.anchors)/loss.num_anchors
+                loss.anchor_step = len(loss.anchors)//loss.num_anchors
                 loss.object_scale = float(block['object_scale'])
                 loss.noobject_scale = float(block['noobject_scale'])
                 loss.class_scale = float(block['class_scale'])
@@ -289,6 +289,8 @@ class Darknet(nn.Module):
                 pass
             else:
                 print('unknown type %s' % (block['type']))
+            if ind >= 12:
+                break
 
     def save_weights(self, outfile, cutoff=0):
         if cutoff <= 0:

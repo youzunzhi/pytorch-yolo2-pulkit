@@ -113,7 +113,7 @@ def convert2cpu_long(gpu_matrix):
     return torch.LongTensor(gpu_matrix.size()).copy_(gpu_matrix)
 
 def get_region_boxes(output, conf_thresh, num_classes, anchors, num_anchors, only_objectness=1, validation=False):
-    anchor_step = len(anchors)/num_anchors
+    anchor_step = len(anchors)//num_anchors
     if output.dim() == 3:
         output = output.unsqueeze(0)
     batch = output.size(0)
@@ -367,7 +367,6 @@ def read_data_cfg(datacfg):
     options['num_workers'] = '10'
     with open(datacfg, 'r') as fp:
         lines = fp.readlines()
-
     for line in lines:
         line = line.strip()
         if line == '':

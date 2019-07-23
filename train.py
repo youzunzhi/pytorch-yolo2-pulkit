@@ -39,7 +39,7 @@ backupdir     = data_options['backup']
 nsamples      = file_lines(trainlist)
 gpus          = data_options['gpus']  # e.g. 0,1,2,3
 ngpus         = len(gpus.split(','))
-num_workers   = int(data_options['num_workers'])
+num_workers   = 0
 
 batch_size    = int(net_options['batch'])
 max_batches   = int(net_options['max_batches'])
@@ -51,6 +51,7 @@ scales        = [float(scale) for scale in net_options['scales'].split(',')]
 
 #Train parameters
 max_epochs    = max_batches*batch_size//nsamples+1
+print(max_epochs)
 use_cuda      = True
 seed          = int(time.time())
 eps           = 1e-5
@@ -82,7 +83,7 @@ processed_batches = model.seen/batch_size
 
 init_width        = model.width
 init_height       = model.height
-init_epoch        = model.seen/nsamples 
+init_epoch        = 0
 
 kwargs = {'num_workers': num_workers, 'pin_memory': True} if use_cuda else {}
 test_loader = torch.utils.data.DataLoader(
@@ -141,7 +142,6 @@ def train(epoch):
                        batch_size=batch_size,
                        num_workers=num_workers),
         batch_size=batch_size, shuffle=False, **kwargs)
-
     lr = adjust_learning_rate(optimizer, processed_batches)
     logging('epoch %d, processed %d samples, lr %f' % (epoch, epoch * len(train_loader.dataset), lr))
     model.train()

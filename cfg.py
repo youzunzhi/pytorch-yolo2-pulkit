@@ -53,7 +53,7 @@ def print_cfg(blocks):
             kernel_size = int(block['size'])
             stride = int(block['stride'])
             is_pad = int(block['pad'])
-            pad = (kernel_size-1)/2 if is_pad else 0
+            pad = (kernel_size-1)//2 if is_pad else 0
             width = (prev_width + 2*pad - kernel_size)/stride + 1
             height = (prev_height + 2*pad - kernel_size)/stride + 1
             print('%5d %-6s %4d  %d x %d / %d   %3d x %3d x%4d   ->   %3d x %3d x%4d' % (ind, 'conv', filters, kernel_size, kernel_size, stride, prev_width, prev_height, prev_filters, width, height, filters))
