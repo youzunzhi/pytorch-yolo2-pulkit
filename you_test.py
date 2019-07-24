@@ -77,6 +77,9 @@ def get_prediction_metrics(prediction, targets):
 
 
 if __name__ == '__main__':
+    import pydevd_pycharm
+
+    pydevd_pycharm.settrace('172.26.3.54', port=12343, stdoutToServer=True, stderrToServer=True)
 
     datacfg = 'cfg/voc.data'
     cfgfile = 'cfg/yolov2-tiny-voc.cfg'
