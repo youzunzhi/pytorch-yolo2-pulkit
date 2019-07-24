@@ -19,7 +19,7 @@ def rescale_target(targets_i, width, height):
             break
         targets_i_list.append(targets_i[t*5:t*5+5])
     you_targets_i = torch.stack(targets_i_list)
-    you_targets_i[1:] = xywh2xyxy(you_targets_i[1:])
+    you_targets_i[:, 1:] = xywh2xyxy(you_targets_i[:, 1:])
     you_targets_i[:, 1] *= width
     you_targets_i[:, 2] *= height
     you_targets_i[:, 3] *= width
