@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     datacfg = 'cfg/voc.data'
     cfgfile = 'cfg/yolov2-tiny-voc.cfg'
-    weightfile = 'weights/yolov2-tiny-voc.weights'
+    weightfile = '../yolov2-tiny-bnn/weights/yolov2-tiny-voc.weights'
     options = read_data_cfg(datacfg)
     valid_images = options['valid']
     with open(valid_images) as fp:
