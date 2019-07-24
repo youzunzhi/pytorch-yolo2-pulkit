@@ -16,7 +16,7 @@ def valid(datacfg, cfgfile, weightfile, outfile):
     with open(valid_images) as fp:
         tmp_files = fp.readlines()
         valid_files = [item.rstrip() for item in tmp_files]
-    
+
     m = Darknet(cfgfile)
     m.print_network()
     m.load_weights(weightfile)
@@ -24,31 +24,31 @@ def valid(datacfg, cfgfile, weightfile, outfile):
     m.eval()
 
     valid_dataset = dataset.listDataset(valid_images, shape=(m.width, m.height),
-                       shuffle=False,
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                       ]))
+                                        shuffle=False,
+                                        transform=transforms.Compose([
+                                            transforms.ToTensor(),
+                                        ]))
     valid_batchsize = 2
-    assert(valid_batchsize > 1)
+    assert (valid_batchsize > 1)
 
-    kwargs = {'num_workers': 4, 'pin_memory': True}
+    kwargs = {'num_workers': 0, 'pin_memory': True}
     valid_loader = torch.utils.data.DataLoader(
-        valid_dataset, batch_size=valid_batchsize, shuffle=False, **kwargs) 
+        valid_dataset, batch_size=valid_batchsize, shuffle=False, **kwargs)
 
-    fps = [0]*m.num_classes
+    fps = [0] * m.num_classes
     if not os.path.exists('results'):
         os.mkdir('results')
     for i in range(m.num_classes):
         buf = '%s/%s%s.txt' % (prefix, outfile, names[i])
         fps[i] = open(buf, 'w')
-   
+
     lineId = -1
-    
+
     conf_thresh = 0.005
     nms_thresh = 0.45
     for batch_idx, (data, target) in enumerate(valid_loader):
         data = data.cuda()
-        data = Variable(data, volatile = True)
+        data = Variable(data, volatile=True)
         output = m(data).data
         batch_boxes = get_region_boxes(output, conf_thresh, m.num_classes, m.anchors, m.num_anchors, 0, 1)
         for i in range(output.size(0)):
@@ -59,23 +59,27 @@ def valid(datacfg, cfgfile, weightfile, outfile):
             boxes = batch_boxes[i]
             boxes = nms(boxes, nms_thresh)
             for box in boxes:
-                x1 = (box[0] - box[2]/2.0) * width
-                y1 = (box[1] - box[3]/2.0) * height
-                x2 = (box[0] + box[2]/2.0) * width
-                y2 = (box[1] + box[3]/2.0) * height
+                x1 = (box[0] - box[2] / 2.0) * width
+                y1 = (box[1] - box[3] / 2.0) * height
+                x2 = (box[0] + box[2] / 2.0) * width
+                y2 = (box[1] + box[3] / 2.0) * height
 
                 det_conf = box[4]
-                for j in range((len(box)-5)//2):
-                    cls_conf = box[5+2*j]
-                    cls_id = box[6+2*j]
-                    prob =det_conf * cls_conf
+                for j in range((len(box) - 5) // 2):
+                    cls_conf = box[5 + 2 * j]
+                    cls_id = box[6 + 2 * j]
+                    prob = det_conf * cls_conf
                     fps[cls_id].write('%s %f %f %f %f %f\n' % (fileId, prob, x1, y1, x2, y2))
 
     for i in range(m.num_classes):
         fps[i].close()
 
+
 if __name__ == '__main__':
     import sys
+    import pydevd_pycharm
+    pydevd_pycharm.settrace('172.26.3.54', port=12343, stdoutToServer=True, stderrToServer=True)
+    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
     if len(sys.argv) == 4:
         datacfg = sys.argv[1]
         cfgfile = sys.argv[2]
@@ -85,3 +89,4 @@ if __name__ == '__main__':
     else:
         print('Usage:')
         print(' python valid.py datacfg cfgfile weightfile')
+
