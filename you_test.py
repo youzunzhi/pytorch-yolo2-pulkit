@@ -3,7 +3,7 @@ import dataset
 import numpy as np
 import torch
 import tqdm
-from utils import nms, get_region_boxes, get_image_size
+from utils import nms, get_region_boxes, get_image_size, read_data_cfg
 from torchvision import datasets, transforms
 
 
